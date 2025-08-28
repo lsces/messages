@@ -12,6 +12,13 @@
  *
  * @package  messages
  */
+namespace Bitweaver\Messages;
+use Bitweaver\BitBase;
+use Bitweaver\KernelTools;
+use Bitweaver\Liberty\LibertyBase;
+use Bitweaver\Liberty\LibertyContent;
+use Bitweaver\Users\BitUser;
+
 class Messages extends BitBase {
 
 	/**
@@ -19,9 +26,9 @@ class Messages extends BitBase {
 	 * 
 	 * @param array $pParamHash 
 	 * @access public
-	 * @return TRUE on success, FALSE on failure - mErrors will contain reason for failure
+	 * @return bool TRUE on success, FALSE on failure - mErrors will contain reason for failure
 	 */
-	function postMessage( $pParamHash ) {
+	public function postMessage( $pParamHash ) {
 		global $gBitSmarty, $gBitUser, $gBitSystem;
 
 		if( $this->verifyMessage( $pParamHash )) {
@@ -36,7 +43,7 @@ class Messages extends BitBase {
 
 					@mail(
 						$pParamHash['userInfo']['email'],
-						tra( 'New message arrived from ' ).$gBitSystem->getConfig( 'kernel_server_name', $_SERVER["SERVER_NAME"] ),
+						KernelTools::tra( 'New message arrived from ' ).$gBitSystem->getConfig( 'kernel_server_name', $_SERVER["SERVER_NAME"] ),
 						$gBitSmarty->fetch( 'bitpackage:messages/message_notification.tpl' ),
 						"From: ".$gBitSystem->getConfig( 'site_sender_email' )."\r\nContent-type: text/plain;charset=utf-8\r\n"
 					);
@@ -44,7 +51,7 @@ class Messages extends BitBase {
 			}
 		}
 
-		return( count( $this->mErrors ) == 0 );
+		return count( $this->mErrors ) == 0;
 	}
 
 	/**
@@ -52,36 +59,36 @@ class Messages extends BitBase {
 	 * 
 	 * @param array $pParamHash 
 	 * @access public
-	 * @return TRUE on success, FALSE on failure - mErrors will contain reason for failure
+	 * @return bool TRUE on success, FALSE on failure - mErrors will contain reason for failure
 	 */
-	function verifyMessage( &$pParamHash ) {
+	public function verifyMessage( &$pParamHash ) {
 		global $gBitSystem, $gBitUser;
 
 		if( !empty( $pParamHash['to_login'] ) ) {
-			$pParamHash['userInfo'] = $userInfo = $gBitUser->getUserInfo( array( 'login' => $pParamHash['to_login'] ) );
+			$pParamHash['userInfo'] = $userInfo = $gBitUser->getUserInfo( [ 'login' => $pParamHash['to_login'] ] );
 
 			// if that didn't work, we'll see if we were passed a user_id
 			if( empty( $userInfo ) && @BitBase::verifyId( $pParamHash['to_login'] ) ) {
-				$userInfo = $gBitUser->getUserInfo( array( 'user_id' => $pParamHash['to_login'] ) );
+				$userInfo = $gBitUser->getUserInfo( [ 'user_id' => $pParamHash['to_login'] ] );
 			}
 		} else {
-			$this->mErrors['to_login'] = tra( 'No message recipient was specified' );
+			$this->mErrors['to_login'] = KernelTools::tra( 'No message recipient was specified' );
 		}
 
 		if( empty( $userInfo ) ) {
-			$this->mErrors['compose'] = tra( 'Unknown user' ).": ".$pParamHash['to_login'];
-		} elseif( empty( $this->mErrors ) && $gBitUser->getPreference( 'messages_allow_messages', 'y', $userInfo['user_id'] ) ) {
+			$this->mErrors['compose'] = KernelTools::tra( 'Unknown user' ).": ".$pParamHash['to_login'];
+		} elseif( empty( $this->mErrors ) && $gBitUser->getPreference( 'messages_allow_messages', 'y') ) { //? , $userInfo['user_id'] ) ) {
 			// neither subject nor body may contain html - users can use tikiwiki syntax for styling
 			if( !empty( $pParamHash['subject'] ) ) {
 				$pParamHash['message_store']['subject'] = strip_tags( $pParamHash['subject'] );
 			} else {
-				$this->mErrors['subject'] = tra( "The message requires a subject" );
+				$this->mErrors['subject'] = KernelTools::tra( "The message requires a subject" );
 			}
 
 			if( !empty( $pParamHash['body'] ) ) {
 				$pParamHash['message_store']['body'] = strip_tags( $pParamHash['body'] );
 			} else {
-				$this->mErrors['body'] = tra( "The message requires a body" );
+				$this->mErrors['body'] = KernelTools::tra( "The message requires a body" );
 			}
 
 			$pParamHash['message_store']['to_user_id']   = $userInfo['user_id'];
@@ -108,17 +115,17 @@ class Messages extends BitBase {
 				$bindVars[] = $pParamHash['message_store']['hash'];
 
 				if( $this->mDb->getOne( $query, $bindVars ) ) {
-					$this->mErrors['compose'] = $pParamHash['to_login'].' '.tra( 'has already received this message' );
+					$this->mErrors['compose'] = $pParamHash['to_login'].' '.KernelTools::tra( 'has already received this message' );
 				}
 			}
 		} else {
-			$this->mErrors['allow_messages'] = tra( "This user doesn't want to recieve messages" );
+			$this->mErrors['allow_messages'] = KernelTools::tra( "This user doesn't want to recieve messages" );
 		}
 
 		return( count( $this->mErrors ) == 0 );
 	}
 
-	function getList( &$pListHash ) {
+	public function getList( &$pListHash ) {
 		global $gBitUser;
 
 		// ====================== Private Messages ======================
@@ -128,7 +135,7 @@ class Messages extends BitBase {
 
 		LibertyBase::prepGetList( $pListHash );
 
-		$ret = $bindVars = array();
+		$ret = $bindVars = [];
 		$whereSql = '';
 		$bindVars[] = $gBitUser->mUserId;
 
@@ -167,7 +174,7 @@ class Messages extends BitBase {
 
 		// ====================== Broadcast Messages ======================
 		//array_unshift( $bindVars, $gBitUser->mUserId, ROOT_USER_ID, $gBitUser->mUserId );
-		$bindVars = array( $gBitUser->mUserId, ROOT_USER_ID, $gBitUser->mUserId );
+		$bindVars = [ $gBitUser->mUserId, ROOT_USER_ID, $gBitUser->mUserId ];
 
 		$whereSql = '';
 
@@ -199,7 +206,7 @@ class Messages extends BitBase {
 			ORDER BY ".$this->mDb->convertSortmode( $pListHash['sort_mode'] );
 		$result = $this->mDb->query( $query, $bindVars );
 
-		$systemMessages = array();
+		$systemMessages = [];
 		while( $aux = $result->fetchRow() ) {
 			$aux['is_broadcast_message'] = TRUE;
 			$aux['msg_id'] = $aux['msg_id_foo'];	// Due to the left outer join this madness is neccessary
@@ -221,7 +228,7 @@ class Messages extends BitBase {
 
 		// ====================== insane message mergin and sorting ======================
 		$sort_mode = $pListHash['sort_mode'];
-		$ret = array();
+		$ret = [];
 		$normalMessageCount = count($normalMessages);
 		$systemMessageCount = count($systemMessages);
 		$normalMsg = $systemMsg = NULL;
@@ -278,7 +285,7 @@ class Messages extends BitBase {
 				$msg['is_read'] = 'n';
 			}
 			if( empty( $msg['subject'] ) ) {
-				$msg['subject'] = tra( 'none' );
+				$msg['subject'] = KernelTools::tra( 'none' );
 			}
 			$ret[$key] = $msg;
 		}
@@ -290,7 +297,7 @@ class Messages extends BitBase {
 	}
 
 	//function flagMessage( $pUserId, $msg_id, $flag, $val ) {
-	function flagMessage( $pFlagHash ) {
+	public function flagMessage( $pFlagHash ) {
 		global $gBitUser;
 		if( !@BitBase::verifyId( $pFlagHash['msg_id'] ) ) {
 			return FALSE;
@@ -298,42 +305,42 @@ class Messages extends BitBase {
 
 		if( $this->isSystemMessage($pFlagHash['msg_id'] )) {
 			$query = "SELECT COUNT(*) FROM `".BIT_DB_PREFIX."messages_system_map` WHERE `to_user_id` = ? AND `msg_id` = ?";
-			$rowExists = $this->mDb->getOne( $query, array( $gBitUser->mUserId, $pFlagHash['msg_id'] ) );
+			$rowExists = $this->mDb->getOne( $query, [ $gBitUser->mUserId, $pFlagHash['msg_id'] ] );
 			if( $rowExists ) {
 				$query = "UPDATE `".BIT_DB_PREFIX."messages_system_map` SET `{$pFlagHash['act']}`=? WHERE `to_user_id` = ? AND `msg_id` = ?";
-				$this->mDb->query( $query, array( $pFlagHash['actval'], $gBitUser->mUserId, (int)$pFlagHash['msg_id'] ) );
+				$this->mDb->query( $query, [ $pFlagHash['actval'], $gBitUser->mUserId, (int) $pFlagHash['msg_id'] ] );
 			} else {
 				$query = "INSERT INTO `".BIT_DB_PREFIX."messages_system_map` (`msg_id`, `to_user_id`, `{$pFlagHash['act']}`) VALUES (?,?,?)";
-				$this->mDb->query( $query, array( (int)$pFlagHash['msg_id'], $gBitUser->mUserId, $pFlagHash['actval'] ) );
+				$this->mDb->query( $query, [ (int) $pFlagHash['msg_id'], $gBitUser->mUserId, $pFlagHash['actval'] ] );
 			}
 
 		} else {
 			$query = "UPDATE `".BIT_DB_PREFIX."messages` SET `{$pFlagHash['act']}`=? where `to_user_id`=? and `msg_id`=?";
-			$this->mDb->query( $query, array( $pFlagHash['actval'], $gBitUser->mUserId, (int)$pFlagHash['msg_id'] ) );
+			$this->mDb->query( $query, [ $pFlagHash['actval'], $gBitUser->mUserId, (int) $pFlagHash['msg_id'] ] );
 		}
 	}
 
-	function expungeMessage($pUserId, $msg_id) {
+	public function expungeMessage($pUserId, $msg_id) {
 		if (!$msg_id)
 			return false;
 		if ($this->isSystemMessage($msg_id)) {
 			// We just mark this user's messages_system_map row is_hidden = 'y'
 			$query = "UPDATE `".BIT_DB_PREFIX."messages_system_map` SET `is_hidden` = 'y' WHERE `to_user_id` = ? AND `msg_id` = ?";
-			$this->mDb->query($query, array($pUserId, $msg_id));
+			$this->mDb->query($query, [ $pUserId, $msg_id ]);
 		} else {
 			$query = "delete from `".BIT_DB_PREFIX."messages` where `to_user_id`=? and `msg_id`=?";
-			$this->mDb->query($query,array($pUserId,(int)$msg_id));
+			$this->mDb->query($query, [ $pUserId, (int) $msg_id ]);
 		}
 	}
 
-	function getNeighbourMessage( &$pListHash ) {
+	public function getNeighbourMessage( &$pListHash ) {
 		global $gBitUser;
 
 		if( !@BitBase::verifyId( $pListHash['msg_id'] ) ) {
 			return FALSE;
 		}
 
-		$ret = $bindVars = array();
+		$ret = $bindVars = [];
 		$whereSql = '';
 		$bindVars[] = $gBitUser->mUserId;
 		$bindVars[] = $pListHash['msg_id'];
@@ -364,14 +371,14 @@ class Messages extends BitBase {
 		return( !empty( $msg_id ) ? $msg_id : FALSE );
 	}
 
-	function getMessage( $pUserId, $msg_id ) {
+	public function getMessage( $pUserId, $msg_id ) {
 		if (!$this->isSystemMessage($msg_id)) {
-			$bindvars = array( $pUserId, (int)$msg_id );
+			$bindvars = [ $pUserId, (int) $msg_id ];
 			$query = "select * from `".BIT_DB_PREFIX."messages` WHERE `to_user_id`=? and `msg_id`=?";
 			$result = $this->mDb->query($query,$bindvars);
 			$res = $result->fetchRow();
 		} else {
-			$bindvars = array($pUserId, (int)$msg_id);
+			$bindvars = [ $pUserId, (int) $msg_id ];
 			$query = "SELECT msm.*, ug.`group_name`, mm.`from_user_id`, mm.`msg_id` as `msg_id_foo`, mm.`msg_to`, mm.`msg_cc`, mm.`msg_bcc`, mm.`subject`, mm.`body`, mm.`hash`, mm.`msg_date`
 					  FROM `".BIT_DB_PREFIX."messages` mm
 					    INNER JOIN `".BIT_DB_PREFIX."users_groups` ug ON (ug.`group_id` = mm.`group_id`)
@@ -386,15 +393,15 @@ class Messages extends BitBase {
 		$res['parsed'] = LibertyContent::parseDataHash( $res['body'], $gBitSystem->getConfig( 'default_format') );
 
 		if (empty($res['subject']))
-			$res['subject'] = tra('NONE');
+			$res['subject'] = KernelTools::tra('NONE');
 
 		return $res;
 	}
 
 	/*shared*/
-	function unreadMessages( $pUserId ) {
+	public function unreadMessages( $pUserId ) {
 		// Standard user to user messages
-		$normalCount =  $this->mDb->getOne( "select count( * ) from `".BIT_DB_PREFIX."messages` where `to_user_id`=? and `is_read`=?",array( $pUserId,'n' ) );
+		$normalCount =  $this->mDb->getOne( "select count( * ) from `".BIT_DB_PREFIX."messages` where `to_user_id`=? and `is_read`=?", [ $pUserId, 'n' ] );
 		// Broadcast messages where they have a messages_system_map row but is_read is not yet set
 		$broadcastCount = $this->mDb->getOne("SELECT COUNT(mm.`msg_id`) FROM `".BIT_DB_PREFIX."messages` mm INNER JOIN `".BIT_DB_PREFIX."messages_system_map` msm ON (mm.`msg_id` = msm.`msg_id` AND msm.`is_read` <> 'y' AND `is_hidden` <> 'y' AND msm.`to_user_id`= ?) WHERE mm.`to_user_id` = ? AND mm.`group_id` IN (SELECT `group_id` FROM `".BIT_DB_PREFIX."users_groups_map` WHERE `user_id`= ?) ", array($pUserId, ROOT_USER_ID, $pUserId));
 		// Broadcast messages where they do not yet have a messages_system_map row
@@ -405,43 +412,43 @@ class Messages extends BitBase {
 
 
 	// ==================== system messages ====================
-	function postSystemMessage( $pParamHash ) {
+	public function postSystemMessage( $pParamHash ) {
 		$pParamHash['to_login'] = ROOT_USER_ID;
 		$pParamHash['to']       = ROOT_USER_ID;
 
 		if( @BitBase::verifyId( $pParamHash['group_id'] ) ) {
 			return $this->postMessage( $pParamHash );
 		} else {
-			$this->mErrors['group_id'] = tra( "You need to specify a group id to broadcast the message to." );
+			$this->mErrors['group_id'] = KernelTools::tra( "You need to specify a group id to broadcast the message to." );
 			return FALSE;
 		}
 	}
 
-	function getSystemMessageList() {
+	public function getSystemMessageList() {
 		$sql = "
 			SELECT *
 			FROM `".BIT_DB_PREFIX."messages`
 			WHERE `from_user_id` = ? AND `group_id` IS NOT NULL
 		";
-		$res = $this->mDb->query( $sql, array( ROOT_USER_ID ) );
+		$res = $this->mDb->query( $sql, [ ROOT_USER_ID ] );
 		return $res->getRows();
 	}
 
-	function expungeSystemMessage( $pMessageId = NULL ) {
+	public function expungeSystemMessage( $pMessageId = NULL ) {
 		if( @BitBase::verifyId( $pMessageId ) ) {
-			$tables = array( "messages_system_map", "messages" );
+			$tables = [ "messages_system_map", "messages" ];
 			foreach( $tables as $table ) {
 				$sql = "DELETE FROM `".BIT_DB_PREFIX.$table."` WHERE msg_id = ?";
-				$rs = $this->mDb->query( $sql, array( $pMessageId ) );
+				$rs = $this->mDb->query( $sql, [ $pMessageId ] );
 			}
 		}
 	}
 
-	function isSystemMessage( $pMessageId = NULL ) {
+	public function isSystemMessage( $pMessageId = NULL ) {
 		$ret = FALSE;
 		if( @BitBase::verifyId( $pMessageId ) ) {
 			$query = "SELECT COUNT(msg_id) FROM `".BIT_DB_PREFIX."messages` WHERE `to_user_id` = ? AND `msg_id` = ?";
-			$ret = $this->mDb->getOne( $query, array( ROOT_USER_ID, $pMessageId ) );
+			$ret = $this->mDb->getOne( $query, [ ROOT_USER_ID, $pMessageId ] );
 		}
 		return $ret;
 	}

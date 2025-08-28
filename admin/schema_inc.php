@@ -1,8 +1,8 @@
 <?php
 
-$tables = array(
+$tables = [
 
-'messages' => "
+	'messages'            => "
 	msg_id I4 AUTO PRIMARY,
 	to_user_id I4 NOTNULL,
 	from_user_id I4 NOTNULL,
@@ -21,7 +21,7 @@ $tables = array(
 	priority I4
 ",
 
-'messages_system_map' => "
+	'messages_system_map' => "
 	msg_id I4,
 	to_user_id I4 NOTNULL,
 	is_read C(1),
@@ -29,13 +29,13 @@ $tables = array(
 	is_replied C(1),
 	priority I4,
 	is_hidden C(1)
-	CONSTRAINT	', CONSTRAINT `messages_system_message_ref` FOREIGN KEY (`msg_id`) REFERENCES `".BIT_DB_PREFIX."messages` (`msg_id`)'
+	CONSTRAINT	', CONSTRAINT `messages_system_message_ref` FOREIGN KEY (`msg_id`) REFERENCES `" . BIT_DB_PREFIX . "messages` (`msg_id`)'
 "
 
-//  CONSTRAINT	', CONSTRAINT messages_to_user_ref FOREIGN KEY (to_user_id) REFERENCES `".BIT_DB_PREFIX."users_users` (user_id)
+	//  CONSTRAINT	', CONSTRAINT messages_to_user_ref FOREIGN KEY (to_user_id) REFERENCES `".BIT_DB_PREFIX."users_users` (user_id)
 //				 , CONSTRAINT messages_from_user_ref FOREIGN KEY (from_user_id) REFERENCES `".BIT_DB_PREFIX."users_users` (user_id)'
 
-);
+];
 
 global $gBitInstaller;
 
@@ -43,30 +43,29 @@ foreach( array_keys( $tables ) AS $tableName ) {
 	$gBitInstaller->registerSchemaTable( MESSAGES_PKG_NAME, $tableName, $tables[$tableName] );
 }
 
-$gBitInstaller->registerPackageInfo( MESSAGES_PKG_NAME, array(
-	'description' => "An intra-site messaging system for users.",
-	'license' => '<a href="http://www.gnu.org/licenses/licenses.html#LGPL">LGPL</a>',
+$gBitInstaller->registerPackageInfo( MESSAGES_PKG_NAME, [
+	'description'  => "An intra-site messaging system for users.",
+	'license'      => '<a href="http://www.gnu.org/licenses/licenses.html#LGPL">LGPL</a>',
 	'requirements' => 'If you are using MySQL, at least version 4.1',
-) );
+] );
 
 
 // ### Default User Permissions
-$gBitInstaller->registerUserPermissions( MESSAGES_PKG_NAME, array(
-	array('p_messages_send', 'Can use the messaging system', 'registered', MESSAGES_PKG_NAME),
-	array('p_messages_broadcast', 'Can send internal messages to all users', 'editors', MESSAGES_PKG_NAME),
-) );
+$gBitInstaller->registerUserPermissions( MESSAGES_PKG_NAME, [
+	[ 'p_messages_send', 'Can use the messaging system', 'registered', MESSAGES_PKG_NAME ],
+	[ 'p_messages_broadcast', 'Can send internal messages to all users', 'editors', MESSAGES_PKG_NAME ],
+] );
 
 // ### Indexes
-$indices = array (
-	'messages_to_user_id_idx' => array( 'table' => 'messages', 'cols' => 'to_user_id', 'opts' => NULL ),
-	'messages_from_user_id_idx' => array( 'table' => 'messages', 'cols' => 'from_user_id', 'opts' => NULL )
-);
+$indices = [
+	'messages_to_user_id_idx'   => [ 'table' => 'messages', 'cols' => 'to_user_id', 'opts' => null ],
+	'messages_from_user_id_idx' => [ 'table' => 'messages', 'cols' => 'from_user_id', 'opts' => null ],
 // TODO - SPIDERR - following seems to cause time _decrease_ cause bigint on postgres. need more investigation
-//	'blog_posts_created_idx' => array( 'table' => 'blog_posts', 'cols' => 'created', 'opts' => NULL ),
+//	'blog_posts_created_idx' => [ 'table' => 'blog_posts', 'cols' => 'created', 'opts' => null ],
+];
 $gBitInstaller->registerSchemaIndexes( MESSAGES_PKG_NAME, $indices );
 
 // ### Default Preferences
-$gBitInstaller->registerPreferences( MESSAGES_PKG_NAME, array(
-	array(MESSAGES_PKG_NAME,'messages_contact_user','admin'),
-) );
-?>
+$gBitInstaller->registerPreferences( MESSAGES_PKG_NAME, [
+	[ MESSAGES_PKG_NAME, 'messages_contact_user', 'admin' ],
+] );
