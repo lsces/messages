@@ -15,4 +15,3 @@ if( !empty( $_REQUEST['anonymous_settings'] ) ) {
 }
 
 $gBitSystem->setHelpInfo( 'Features', 'Settings', 'Help with the features settings' );
-?>

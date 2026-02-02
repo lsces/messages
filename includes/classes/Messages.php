@@ -229,8 +229,8 @@ class Messages extends BitBase {
 		// ====================== insane message mergin and sorting ======================
 		$sort_mode = $pListHash['sort_mode'];
 		$ret = [];
-		$normalMessageCount = count($normalMessages);
-		$systemMessageCount = count($systemMessages);
+		$normalMessageCount = \count($normalMessages);
+		$systemMessageCount = \count($systemMessages);
 		$normalMsg = $systemMsg = NULL;
 		if (strpos($sort_mode, '_asc') !== FALSE) {
 			$sortType = '_asc';
@@ -361,11 +361,7 @@ class Messages extends BitBase {
 			$bindVars[] = '%'.strtoupper( $pListHash['find'] ).'%';
 		}
 
-		if( !empty( $pListHash['neighbour'] ) && $pListHash['neighbour'] == 'prev' ) {
-			$query = "SELECT MAX(`msg_id`) FROM `".BIT_DB_PREFIX."messages` mm WHERE `to_user_id`=? AND `msg_id` < ? $whereSql";
-		} else {
-			$query = "SELECT MIN(`msg_id`) FROM `".BIT_DB_PREFIX."messages` mm WHERE `to_user_id`=? AND `msg_id` > ? $whereSql";
-		}
+		$query = ( !empty( $pListHash['neighbour'] ) && $pListHash['neighbour'] == 'prev' ) ? "SELECT MAX(`msg_id`) FROM `" . BIT_DB_PREFIX . "messages` mm WHERE `to_user_id`=? AND `msg_id` < ? $whereSql" : "SELECT MIN(`msg_id`) FROM `" . BIT_DB_PREFIX . "messages` mm WHERE `to_user_id`=? AND `msg_id` > ? $whereSql";
 
 		$msg_id = $this->mDb->getOne( $query, $bindVars );
 		return( !empty( $msg_id ) ? $msg_id : FALSE );
@@ -403,9 +399,9 @@ class Messages extends BitBase {
 		// Standard user to user messages
 		$normalCount =  $this->mDb->getOne( "select count( * ) from `".BIT_DB_PREFIX."messages` where `to_user_id`=? and `is_read`=?", [ $pUserId, 'n' ] );
 		// Broadcast messages where they have a messages_system_map row but is_read is not yet set
-		$broadcastCount = $this->mDb->getOne("SELECT COUNT(mm.`msg_id`) FROM `".BIT_DB_PREFIX."messages` mm INNER JOIN `".BIT_DB_PREFIX."messages_system_map` msm ON (mm.`msg_id` = msm.`msg_id` AND msm.`is_read` <> 'y' AND `is_hidden` <> 'y' AND msm.`to_user_id`= ?) WHERE mm.`to_user_id` = ? AND mm.`group_id` IN (SELECT `group_id` FROM `".BIT_DB_PREFIX."users_groups_map` WHERE `user_id`= ?) ", array($pUserId, ROOT_USER_ID, $pUserId));
+		$broadcastCount = $this->mDb->getOne("SELECT COUNT(mm.`msg_id`) FROM `".BIT_DB_PREFIX."messages` mm INNER JOIN `".BIT_DB_PREFIX."messages_system_map` msm ON (mm.`msg_id` = msm.`msg_id` AND msm.`is_read` <> 'y' AND `is_hidden` <> 'y' AND msm.`to_user_id`= ?) WHERE mm.`to_user_id` = ? AND mm.`group_id` IN (SELECT `group_id` FROM `".BIT_DB_PREFIX."users_groups_map` WHERE `user_id`= ?) ", [ $pUserId, ROOT_USER_ID, $pUserId ]);
 		// Broadcast messages where they do not yet have a messages_system_map row
-		$broadcastCount2 = $this->mDb->getOne("SELECT COUNT(mm.`msg_id`) FROM `".BIT_DB_PREFIX."messages` mm WHERE mm.`to_user_id` = ? AND mm.`group_id` IN (SELECT `group_id` FROM `".BIT_DB_PREFIX."users_groups_map` WHERE `user_id` = ?) AND NOT EXISTS ( SELECT msm.`msg_id` FROM `".BIT_DB_PREFIX."messages_system_map` msm WHERE msm.`msg_id` = mm.`msg_id` AND msm.`to_user_id` = ?)", array(ROOT_USER_ID, $pUserId, $pUserId));
+		$broadcastCount2 = $this->mDb->getOne("SELECT COUNT(mm.`msg_id`) FROM `".BIT_DB_PREFIX."messages` mm WHERE mm.`to_user_id` = ? AND mm.`group_id` IN (SELECT `group_id` FROM `".BIT_DB_PREFIX."users_groups_map` WHERE `user_id` = ?) AND NOT EXISTS ( SELECT msm.`msg_id` FROM `".BIT_DB_PREFIX."messages_system_map` msm WHERE msm.`msg_id` = mm.`msg_id` AND msm.`to_user_id` = ?)", [ ROOT_USER_ID, $pUserId, $pUserId ]);
 		return $normalCount + $broadcastCount + $broadcastCount2;
 	}
 

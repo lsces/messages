@@ -15,7 +15,6 @@ define( 'MESSAGES_PKG_CLASS_PATH', BIT_ROOT_PATH . basename( $pRegisterHash['pac
 $gBitSystem->registerPackage( $pRegisterHash );
 
 if( $gBitSystem->isPackageActive( 'messages' ) && $gBitUser->hasPermission( 'p_messages_send' ) ) {
-	require_once MESSAGES_PKG_CLASS_PATH . 'Messages.php';
 	$messages = new Messages();
 	$unreadMsgs = $messages->unreadMessages( $gBitUser->mUserId );
 	$gBitSmarty->assign( 'unreadMsgs', $unreadMsgs );

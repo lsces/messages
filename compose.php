@@ -1,4 +1,5 @@
 <?php
+
 /**
 * message package modules
 *
@@ -16,11 +17,12 @@
  * required setup
  */
 require_once( '../kernel/includes/setup_inc.php' );
-require_once( MESSAGES_PKG_CLASS_PATH.'Messages.php' );
+use Bitweaver\Messages\Messages;
+use Bitweaver\KernelTools;
 
 if( !$gBitUser->isRegistered() ) {
-	$gBitSmarty->assign('msg', tra("You are not logged in"));
-	$gBitSystem->display( 'error.tpl' , NULL, array( 'display_mode' => 'display' ));
+	$gBitSmarty->assign('msg', KernelTools::tra("You are not logged in"));
+	$gBitSystem->display( 'error.tpl' , NULL, [ 'display_mode' => 'display' ]);
 	die;
 }
 
@@ -58,7 +60,7 @@ if( !empty( $_REQUEST['action']['reply'] ) || !empty( $_REQUEST['action']['reply
 
 // Strip Re:Re:Re: from subject
 if(isset($_REQUEST['action']['reply']) || isset($_REQUEST['action']['replyall'])) {
-	$_REQUEST['subject'] = tra("Re: ").preg_replace("/^(".tra("Re: ").")+/i", "", $_REQUEST['subject']);
+	$_REQUEST['subject'] = KernelTools::tra("Re: ").preg_replace("/^(".KernelTools::tra("Re: ").")+/i", "", $_REQUEST['subject']);
 }
 
 $gBitSmarty->assign('to', $_REQUEST['to']);
@@ -70,14 +72,14 @@ $gBitSmarty->assign('priority', $_REQUEST['priority']);
 
 $gBitSmarty->assign('sent', 0);
 $feedback = array();
-$gBitSmarty->assignByRef( 'feedback', $feedback );
+$gBitSmarty->assign( 'feedback', $feedback );
 
 if (isset($_REQUEST['replyto']) || isset($_REQUEST['replyallto'])) {
-	$flagHash = array(
+	$flagHash = [
 		'msg_id' => $_REQUEST['msg_id'],
 		'act'    => 'is_replied',
 		'actval' => 'y',
-	);
+	];
 	$messages->flagMessage( $flagHash );
 }
 
@@ -99,7 +101,7 @@ if (isset($_REQUEST['send'])) {
 				if( !empty( $toUser ) ) {
 					$_REQUEST['to_login'] = $toUser;
 					if( $messages->postMessage( $_REQUEST ) ) {
-						$feedback['success'][] =  tra( "Message will be sent to: " ).' '.$toUser;
+						$feedback['success'][] =  KernelTools::tra( "Message will be sent to: " ).' '.$toUser;
 					} else {
 						$feedback['error'][] = $messages->mErrors['compose'];
 					}
@@ -107,12 +109,11 @@ if (isset($_REQUEST['send'])) {
 			}
 			$gBitSmarty->assign('sent', 1);
 		} else {
-			$feedback['error'][] = tra('ERROR: No valid users to send the message.');
+			$feedback['error'][] = KernelTools::tra('ERROR: No valid users to send the message.');
 		}
 	} else {
-		$feedback['error'][] = tra( 'ERROR: Either the subject or body must contain text.' );
+		$feedback['error'][] = KernelTools::tra( 'ERROR: Either the subject or body must contain text.' );
 	}
 }
 
-$gBitSystem->display( 'bitpackage:messages/compose.tpl', 'Compose Message' , array( 'display_mode' => 'display' ));
-?>
+$gBitSystem->display( 'bitpackage:messages/compose.tpl', 'Compose Message' , [ 'display_mode' => 'display' ]);

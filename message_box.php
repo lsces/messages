@@ -1,4 +1,5 @@
 <?php
+
 /**
 * message package modules
 *
@@ -16,10 +17,12 @@
  * required setup
  */
 require_once( '../kernel/includes/setup_inc.php' );
-require_once( MESSAGES_PKG_CLASS_PATH.'Messages.php' );
+use Bitweaver\Messages\Messages;
+use Bitweaver\KernelTools;
+
 
 if( !$gBitUser->isRegistered() ) {
-	$gBitSmarty->assign('msg', tra("You are not logged in"));
+	$gBitSmarty->assign('msg', KernelTools::tra("You are not logged in"));
 	$gBitSystem->display( 'error.tpl' , NULL, array( 'display_mode' => 'display' ));
 	die;
 }
@@ -35,11 +38,11 @@ $max_records = $gBitSystem->getConfig( 'max_records', 20 );
 if (isset($_REQUEST["mark"]) && isset($_REQUEST["msg"])) {
 	foreach( array_keys( $_REQUEST["msg"] ) as $msg_id ) {
 		$parts = explode( '_', $_REQUEST['action'] );
-		$flagHash = array(
-			'msg_id' => $msg_id ,
-			'act'    => $parts[0].'_'.$parts[1],
+		$flagHash = [
+			'msg_id' => $msg_id,
+			'act'    => "$parts[0]_$parts[1]",
 			'actval' => $parts[2],
-		);
+		];
 		$messages->flagMessage( $flagHash );
 	}
 }
@@ -60,22 +63,13 @@ if( !empty( $_REQUEST['filter'] ) ) {
 	}
 }
 
-if ( empty( $_REQUEST["sort_mode"] ) ) {
-	$_REQUEST['sort_mode'] = 'msg_date_desc';
-} else {
-	$_REQUEST['sort_mode'] = $_REQUEST["sort_mode"];
-}
+$_REQUEST['sort_mode'] = ( empty( $_REQUEST["sort_mode"] ) ) ? 'msg_date_desc' : $_REQUEST["sort_mode"];
 
-if (isset($_REQUEST["find"])) {
-	$find = $_REQUEST["find"];
-} else {
-	$find = '';
-}
+$find = ( isset( $_REQUEST["find"] ) ) ? $_REQUEST["find"] : '';
 
 $listHash = $_REQUEST;
 $items = $messages->getList( $listHash );
 $gBitSmarty->assign( 'items', $items );
 $gBitSmarty->assign( 'listInfo', $listHash['listInfo'] );
 
-$gBitSystem->display( 'bitpackage:messages/mailbox.tpl', 'Message box' , array( 'display_mode' => 'display' ));
-?>
+$gBitSystem->display( 'bitpackage:messages/mailbox.tpl', 'Message box' , [ 'display_mode' => 'display' ]);

@@ -1,4 +1,5 @@
 <?php
+
 /**
 * message package modules
 *
@@ -16,21 +17,22 @@
  * required setup
  */
 require_once( '../kernel/includes/setup_inc.php' );
-require_once( MESSAGES_PKG_CLASS_PATH.'Messages.php' );
+use Bitweaver\Messages\Messages;
+use Bitweaver\KernelTools;
 
 $gBitSystem->verifyFeature( 'messages_site_contact' );
 $messages = new Messages();
 
 if( !empty( $_REQUEST['send'] )) {
 	if( empty( $_REQUEST['subject'] ) && empty( $_REQUEST['body'] ) ) {
-		$gBitSystem->fatalError( tra( "Either a subject or a message body is required." ));
+		$gBitSystem->fatalError( KernelTools::tra( "Either a subject or a message body is required." ));
 	}
 
 	$postHash = $_REQUEST;
 	$postHash['to_login'] = $postHash['msg_to'] = $gBitSystem->getConfig( 'messages_contact_user' );
 	$messages->postMessage( $postHash );
 
-	$feedback['success'] = tra( 'Your message was sent to' ).': '.$gBitSystem->getConfig( 'messages_contact_user' );
+	$feedback['success'] = KernelTools::tra( 'Your message was sent to' ).': '.$gBitSystem->getConfig( 'messages_contact_user' );
 	$gBitSmarty->assign( 'feedback', $feedback );
 }
 

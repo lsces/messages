@@ -1,4 +1,5 @@
 <?php
+
 /**
 * message package modules
 *
@@ -16,10 +17,12 @@
  * required setup
  */
 require_once( '../kernel/includes/setup_inc.php' );
-require_once( MESSAGES_PKG_CLASS_PATH.'Messages.php' );
+use Bitweaver\Messages\Messages;
+use Bitweaver\KernelTools;
+
 
 if( !$gBitUser->isRegistered() ) {
-	$gBitSystem->fatalError( tra( "You are not logged in" ) );
+	$gBitSystem->fatalError( KernelTools::tra( "You are not logged in" ) );
 }
 
 $gBitSystem->isPackageActive( 'messages' );
@@ -47,11 +50,11 @@ $gBitSmarty->assign('next', $next);
 $gBitSmarty->assign('prev', $prev);
 
 // Mark the message as read
-$flagHash = array(
+$flagHash = [
 	'msg_id' => $_REQUEST['msg_id'],
 	'act'    => 'is_read',
 	'actval' => 'y',
-);
+];
 $messages->flagMessage( $flagHash );
 
 // Get the message and assign its data to template vars
@@ -59,5 +62,3 @@ $msg = $messages->getMessage( $gBitUser->mUserId, $_REQUEST['msg_id']);
 $gBitSmarty->assign( 'msg', $msg );
 
 $gBitSystem->display( 'bitpackage:messages/read.tpl', NULL, array( 'display_mode' => 'display' ));
-
-?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
 * message package modules
 *
@@ -12,11 +13,11 @@
  * required setup
  */
 require_once( '../kernel/includes/setup_inc.php' );
-
-include_once( MESSAGES_PKG_CLASS_PATH.'Messages.php' );
+use Bitweaver\Messages\Messages;
+use Bitweaver\KernelTools;
 
 if( !$gBitUser->isRegistered() ) {
-	$gBitSmarty->fatalError( tra( "You are not logged in" ) );
+//	$gBitSmarty->fatalError( KernelTools::tra( "You are not logged in" ) );
 }
 
 $gBitSystem->isPackageActive( 'messages', TRUE );
@@ -35,7 +36,7 @@ if( isset( $_REQUEST['send'] ) ) {
 }
 
 if( $gBitUser->isAdmin() ) {
-	$pListHash = array('sort_mode' => 'group_id_asc');
+	$pListHash = [ 'sort_mode' => 'group_id_asc' ];
 	$groups = $gBitUser->getAllGroups( $pListHash );
 } else {
 	$gBitUser->loadGroups();
@@ -44,5 +45,4 @@ if( $gBitUser->isAdmin() ) {
 $gBitSmarty->assign( 'groups', $groups );
 $gBitSmarty->assign( 'feedback', $feedback );
 
-$gBitSystem->display( 'bitpackage:messages/broadcast.tpl', NULL, array( 'display_mode' => 'display' ));
-?>
+$gBitSystem->display( 'bitpackage:messages/broadcast.tpl', NULL, [ 'display_mode' => 'display' ]);
