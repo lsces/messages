@@ -67,10 +67,10 @@
 				{forminput}
 					<select name="flags" id="messages">
 						<option value="">{tr}All{/tr}</option>
-						<option value="is_read_y"    {if $smarty.request.flag eq 'is_read'    and $smarty.request.flagval eq 'y'}selected="selected"{/if}>{tr}Read{/tr}</option>
-						<option value="is_read_n"    {if $smarty.request.flag eq 'is_read'    and $smarty.request.flagval eq 'n'}selected="selected"{/if}>{tr}Unread{/tr}</option>
-						<option value="is_flagged_y" {if $smarty.request.flag eq 'is_flagged' and $smarty.request.flagval eq 'y'}selected="selected"{/if}>{tr}Flagged{/tr}</option>
-						<option value="is_flagged_y" {if $smarty.request.flag eq 'isflagged'  and $smarty.request.flagval eq 'n'}selected="selected"{/if}>{tr}Unflagged{/tr}</option>
+						<option value="is_read_y"    {if $smarty.request.flag eq 'is_read'    && $smarty.request.flagval eq 'y'}selected="selected"{/if}>{tr}Read{/tr}</option>
+						<option value="is_read_n"    {if $smarty.request.flag eq 'is_read'    && $smarty.request.flagval eq 'n'}selected="selected"{/if}>{tr}Unread{/tr}</option>
+						<option value="is_flagged_y" {if $smarty.request.flag eq 'is_flagged' && $smarty.request.flagval eq 'y'}selected="selected"{/if}>{tr}Flagged{/tr}</option>
+						<option value="is_flagged_y" {if $smarty.request.flag eq 'isflagged'  && $smarty.request.flagval eq 'n'}selected="selected"{/if}>{tr}Unflagged{/tr}</option>
 					</select>
 					{formhelp note=""}
 				{/forminput}

@@ -15,7 +15,7 @@
 			{tr}Return to your {smartlink ititle="Message Box" ipackage=messages ifile="message_box.php"}{/tr}
 		{/if}
 
-		{if !$feedback or $feedback.error}
+		{if !$feedback || $feedback.error}
 			{form legend="Compose Private Message"}
 				<div class="form-group">
 					{formlabel label="To" for="to"}
@@ -45,7 +45,7 @@
 						<select name="priority" id="mess-prio">
 							<option value="1" {if $priority eq 1}selected="selected"{/if}>{tr}1 -Lowest-{/tr}</option>
 							<option value="2" {if $priority eq 2}selected="selected"{/if}>{tr}2 -Low-{/tr}</option>
-							<option value="3" {if $priority eq 3 or !$priority}selected="selected"{/if}>{tr}3 -Normal-{/tr}</option>
+							<option value="3" {if $priority eq 3 || !$priority}selected="selected"{/if}>{tr}3 -Normal-{/tr}</option>
 							<option value="4" {if $priority eq 4}selected="selected"{/if}>{tr}4 -High-{/tr}</option>
 							<option value="5" {if $priority eq 5}selected="selected"{/if}>{tr}5 -Very High-{/tr}</option>
 						</select>

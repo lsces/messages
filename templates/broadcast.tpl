@@ -16,7 +16,7 @@
 					{forminput}
 						<select name="group_id" id="broadcast-group">
 							{section name=ix loop=$groups}
-								{if $groups[ix].group_id and $groups[ix].group_name}
+								{if $groups[ix].group_id && $groups[ix].group_name}
 									<option value="{$groups[ix].group_id}">{$groups[ix].group_name}</option>
 								{/if}
 							{/section}
