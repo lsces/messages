@@ -50,7 +50,7 @@ if (!isset($_REQUEST['priority']))
 	$_REQUEST['priority'] = 3;
 
 if( !empty( $_REQUEST['action']['reply'] ) || !empty( $_REQUEST['action']['replyall'] ) ) {
-	$replyToUser = $gBitUser->getUserInfo( array( 'user_id' => $_REQUEST['replyto'] ) );
+	$replyToUser = $gBitUser->getUserInfo( [ 'user_id' => $_REQUEST['replyto'] ] );
 	$_REQUEST['to'] = $replyToUser['login'];
 	if( !empty( $_REQUEST['action']['replyall'] ) ) {
 		$_REQUEST['cc'] = preg_replace( "/".$replyToUser['login'].",/", "", $_REQUEST['replyallto'] );
@@ -71,7 +71,7 @@ $gBitSmarty->assign('body', $_REQUEST['body']);
 $gBitSmarty->assign('priority', $_REQUEST['priority']);
 
 $gBitSmarty->assign('sent', 0);
-$feedback = array();
+$feedback = [];
 $gBitSmarty->assign( 'feedback', $feedback );
 
 if (isset($_REQUEST['replyto']) || isset($_REQUEST['replyallto'])) {

@@ -30,7 +30,7 @@ $tables = [
 	priority I4,
 	is_hidden C(1)
 	CONSTRAINT	', CONSTRAINT `messages_system_message_ref` FOREIGN KEY (`msg_id`) REFERENCES `" . BIT_DB_PREFIX . "messages` (`msg_id`)'
-"
+",
 
 	//  CONSTRAINT	', CONSTRAINT messages_to_user_ref FOREIGN KEY (to_user_id) REFERENCES `".BIT_DB_PREFIX."users_users` (user_id)
 //				 , CONSTRAINT messages_from_user_ref FOREIGN KEY (from_user_id) REFERENCES `".BIT_DB_PREFIX."users_users` (user_id)'
@@ -48,7 +48,6 @@ $gBitInstaller->registerPackageInfo( MESSAGES_PKG_NAME, [
 	'license'      => '<a href="http://www.gnu.org/licenses/licenses.html#LGPL">LGPL</a>',
 	'requirements' => 'If you are using MySQL, at least version 4.1',
 ] );
-
 
 // ### Default User Permissions
 $gBitInstaller->registerUserPermissions( MESSAGES_PKG_NAME, [

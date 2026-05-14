@@ -25,7 +25,7 @@ $gBitSystem->verifyPermission( 'p_messages_broadcast' );
 
 $messages = new Messages();
 
-$feedback = array();
+$feedback = [];
 
 if( isset( $_REQUEST['send'] ) ) {
 	if( $messages->postSystemMessage( $_REQUEST ) ) {

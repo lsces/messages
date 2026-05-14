@@ -13,6 +13,7 @@
  * @package  messages
  */
 namespace Bitweaver\Messages;
+
 use Bitweaver\BitBase;
 use Bitweaver\KernelTools;
 use Bitweaver\Liberty\LibertyBase;
@@ -45,7 +46,7 @@ class Messages extends BitBase {
 						$pParamHash['userInfo']['email'],
 						KernelTools::tra( 'New message arrived from ' ).$gBitSystem->getConfig( 'kernel_server_name', $_SERVER["SERVER_NAME"] ),
 						$gBitSmarty->fetch( 'bitpackage:messages/message_notification.tpl' ),
-						"From: ".$gBitSystem->getConfig( 'site_sender_email' )."\r\nContent-type: text/plain;charset=utf-8\r\n"
+						"From: ".$gBitSystem->getConfig( 'site_sender_email' )."\r\nContent-type: text/plain;charset=utf-8\r\n",
 					);
 				}
 			}
@@ -169,9 +170,6 @@ class Messages extends BitBase {
 		$query = "SELECT COUNT(*) FROM `".BIT_DB_PREFIX."messages` mm WHERE mm.`to_user_id`=? $whereSql";
 		$cant = $this->mDb->getOne( $query, $bindVars );
 
-
-
-
 		// ====================== Broadcast Messages ======================
 		//array_unshift( $bindVars, $gBitUser->mUserId, ROOT_USER_ID, $gBitUser->mUserId );
 		$bindVars = [ $gBitUser->mUserId, ROOT_USER_ID, $gBitUser->mUserId ];
@@ -222,9 +220,6 @@ class Messages extends BitBase {
 				LEFT OUTER JOIN `".BIT_DB_PREFIX."messages_system_map` msm ON (mm.`msg_id` = msm.`msg_id` AND msm.`to_user_id` = ?)
 			WHERE mm.`to_user_id`=? AND mm.`group_id` IN (SELECT `group_id` FROM `".BIT_DB_PREFIX."users_groups_map` WHERE `user_id` = ?) $whereSql";
 		$cant2 = $this->mDb->getOne($query, $bindVars);
-
-
-
 
 		// ====================== insane message mergin and sorting ======================
 		$sort_mode = $pListHash['sort_mode'];
@@ -289,7 +284,6 @@ class Messages extends BitBase {
 			}
 			$ret[$key] = $msg;
 		}
-
 
 		$pListHash["cant"] = $cant + $cant2;
 		LibertyBase::postGetList( $pListHash );
@@ -405,8 +399,6 @@ class Messages extends BitBase {
 		return $normalCount + $broadcastCount + $broadcastCount2;
 	}
 
-
-
 	// ==================== system messages ====================
 	public function postSystemMessage( $pParamHash ) {
 		$pParamHash['to_login'] = ROOT_USER_ID;
@@ -414,10 +406,10 @@ class Messages extends BitBase {
 
 		if( @BitBase::verifyId( $pParamHash['group_id'] ) ) {
 			return $this->postMessage( $pParamHash );
-		} else {
+		}
 			$this->mErrors['group_id'] = KernelTools::tra( "You need to specify a group id to broadcast the message to." );
 			return FALSE;
-		}
+
 	}
 
 	public function getSystemMessageList() {

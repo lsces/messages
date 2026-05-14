@@ -20,10 +20,9 @@ require_once( '../kernel/includes/setup_inc.php' );
 use Bitweaver\Messages\Messages;
 use Bitweaver\KernelTools;
 
-
 if( !$gBitUser->isRegistered() ) {
 	$gBitSmarty->assign('msg', KernelTools::tra("You are not logged in"));
-	$gBitSystem->display( 'error.tpl' , NULL, array( 'display_mode' => 'display' ));
+	$gBitSystem->display( 'error.tpl' , NULL, [ 'display_mode' => 'display' ]);
 	die;
 }
 

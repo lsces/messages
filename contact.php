@@ -36,5 +36,5 @@ if( !empty( $_REQUEST['send'] )) {
 	$gBitSmarty->assign( 'feedback', $feedback );
 }
 
-$gBitSystem->display( 'bitpackage:messages/contact.tpl', NULL, array( 'display_mode' => 'display' ));
+$gBitSystem->display( 'bitpackage:messages/contact.tpl', NULL, [ 'display_mode' => 'display' ]);
 ?>

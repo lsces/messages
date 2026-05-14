@@ -1,5 +1,6 @@
 <?php
 namespace Bitweaver\Messages;
+
 global $gBitSystem, $gBitUser, $gBitSmarty;
 
 $pRegisterHash = [
