@@ -18,7 +18,7 @@ use Bitweaver\BitBase;
 use Bitweaver\KernelTools;
 use Bitweaver\Liberty\LibertyBase;
 use Bitweaver\Liberty\LibertyContent;
-use Bitweaver\Users\BitUser;
+use Bitweaver\Users\RoleUser;
 
 class Messages extends BitBase {
 
@@ -35,7 +35,7 @@ class Messages extends BitBase {
 		if( $this->verifyMessage( $pParamHash )) {
 			$this->mDb->associateInsert( BIT_DB_PREFIX."messages", $pParamHash['message_store'] );
 			// we need to load the user this message is being sent to that we can check if the user should be notified by email
-			$queryUser = new BitUser( $pParamHash['userInfo']['user_id'] );
+			$queryUser = new RoleUser( $pParamHash['userInfo']['user_id'] );
 			$queryUser->load();
 			if( $queryUser->getPreference( 'messages_min_priority' ) && $queryUser->getPreference( 'messages_min_priority' ) <= $pParamHash['message_store']['priority'] ) {
 				if( !empty( $pParamHash['userInfo']['email'] )) {
