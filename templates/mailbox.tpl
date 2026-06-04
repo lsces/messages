@@ -23,7 +23,7 @@
 				<caption>{tr}Messages{/tr}</caption>
 				<tr>
 					<th style="width:1%">&nbsp;</th>
-					<th style="width:1%">{smartlink ititle="Flagged" isort=is_flagged ibiticon="icons/mail-mark-important" find=$smarty.request.find flag=$smarty.request.flag priority=$smarty.request.priority flagval=$smarty.request.flagval}</th>
+					<th style="width:1%">{smartlink ititle="Flagged" isort=is_flagged ibiticon="icons/emblem-important" find=$smarty.request.find flag=$smarty.request.flag priority=$smarty.request.priority flagval=$smarty.request.flagval}</th>
 					<th>{smartlink ititle="From" isort=$displayName find=$smarty.request.find flag=$smarty.request.flag priority=$smarty.request.priority flagval=$smarty.request.flagval}</th>
 					<th>{smartlink ititle="Subject" isort=subject find=$smarty.request.find flag=$smarty.request.flag priority=$smarty.request.priority flagval=$smarty.request.flagval}</th>
 					<th>{smartlink ititle="Date" isort=msg_date find=$smarty.request.find flag=$smarty.request.flag priority=$smarty.request.priority flagval=$smarty.request.flagval}</th>
@@ -33,7 +33,7 @@
 				{section name=user loop=$items}
 					<tr class="{cycle values="odd,even"}{if $items[user].is_read eq 'n'} highlight{/if}">
 						<td><input type="checkbox" name="msg[{$items[user].msg_id}]" /></td>
-						<td class="prio{$items[user].priority}">{if $items[user].is_flagged eq 'y'}{biticon ipackage="icons" iname="mail-mark-important" iexplain="Flagged"}{/if}</td>
+						<td class="prio{$items[user].priority}">{if $items[user].is_flagged eq 'y'}{biticon ipackage="icons" iname="emblem-important" iexplain="Flagged"}{/if}</td>
 						<td>{displayname hash=$items[user]}</td>
 						<td>
 							<a href="{$smarty.const.MESSAGES_PKG_URL}read.php?flag={$smarty.request.flag}&amp;priority={$smarty.request.priority}&amp;flagval={$smarty.request.flagval}&amp;sort_mode={$smarty.request.sort_mode}&amp;find={$smarty.request.find}&amp;msg_id={$items[user].msg_id}">{$items[user].subject}</a>
